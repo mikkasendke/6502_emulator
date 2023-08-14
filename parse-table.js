@@ -65,7 +65,7 @@ function assembleEntries(entries) {
             result += ",\n";
             continue;
         }
-        result += "\n}";
+        result += "\n};";
     }
     return result;
 }
@@ -95,6 +95,7 @@ class Entry {
 
         let modes = copy.split(" ");
 
+        console.log(JSON.stringify(modes, null, 2));
         for (let i = 0; i < modes.length; i++) {
             switch (modes[i]) {
                 case "immediate":
@@ -127,7 +128,8 @@ class Entry {
                 default:
                     console.log("Unknown addressing mode: " + modes[i]);
             }
-            return result;
         }
+        console.log("result: " + result);
+        return result;
     }
 }
