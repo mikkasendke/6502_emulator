@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <memory>
 #include <unordered_map>
+#include <map>
 #include <functional>
 
 typedef uint8_t Byte;
@@ -123,6 +124,7 @@ struct Cpu {
     Memory mem; // Memory
 
     std::unordered_map<OpCode, std::function<void(Cpu*)>> instruction_map;
+    std::map<OpCode, void (Cpu::*)()> instruction_map;
     // Registers
     Word PC; // Program Counter
     Byte SP; // Stack Pointer
