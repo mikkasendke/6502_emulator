@@ -1,11 +1,7 @@
-#include <complex>
-#include <float.h>
 #include <stdio.h>
 #include <stdint.h>
 #include <memory>
-#include <unordered_map>
 #include <map>
-#include <functional>
 
 typedef uint8_t Byte;
 typedef uint16_t Word;
@@ -97,8 +93,8 @@ struct Cpu {
     }
 
     void reset() {
-        PC = 0xFFFC;
-        SP = 0x0100;
+        PC = 0xfffc;
+        SP = 0xfd;
         A = 0;
         X = 0;
         Y = 0;
@@ -116,14 +112,13 @@ struct Cpu {
             return;
         }
 
-        iter->second(this);
+        (this->*iter->second)();
     }
 
     private:
 
     Memory mem; // Memory
 
-    std::unordered_map<OpCode, std::function<void(Cpu*)>> instruction_map;
     std::map<OpCode, void (Cpu::*)()> instruction_map;
     // Registers
     Word PC; // Program Counter
@@ -159,11 +154,11 @@ struct Cpu {
 
     // Instructions
     void illegal() {
-        std::printf("Illegal instruction at 0x%04X\n", PC - 1);
+        printf("Illegal instruction at 0x%04X\n", PC - 1);
         //exit(1);
     }
     void not_implemented() {
-        std::printf("Instruction not implemented at 0x%04X\n", PC - 1);
+        printf("Instruction not implemented at 0x%04X\n", PC - 1);
         exit(1);
     }
     void lda_immediate() {
