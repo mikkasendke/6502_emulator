@@ -51,7 +51,7 @@ struct StatusFlags {
 };
 
 struct Cpu {
-    enum Opcode {
+    enum OpCode {
         BRK_IMP = 0x00,
         ORA_X_IND = 0x01,
         ORA_ZP = 0x05,
@@ -212,7 +212,7 @@ struct Cpu {
 
     void init_opcode_map() {
         instruction_map[OpCode::LDA_IMM] = &Cpu::lda_immediate;
-        instruction_map[OpCode::LDX_IMM] = &Cpu::ldx_immediate;
+        instruction_map[OpCode::LDA_IMM] = &Cpu::ldx_immediate;
         instruction_map[OpCode::LDY_IMM] = &Cpu::ldy_immediate;
     }
 
