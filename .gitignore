@@ -11,3 +11,4 @@ CTestTestfile.cmake
 _deps
 /Debug
 a.exe
+build.bat
