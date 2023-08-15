@@ -51,7 +51,7 @@ struct StatusFlags {
 };
 
 struct Cpu {
-    enum OpCode {
+    enum class OpCode {
         BRK_IMP = 0x00,
         ORA_X_IND = 0x01,
         ORA_ZP = 0x05,
