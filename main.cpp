@@ -212,7 +212,7 @@ struct Cpu {
 
     void init_opcode_map() {
         instruction_map[OpCode::LDA_IMM] = &Cpu::lda_immediate;
-        instruction_map[OpCode::LDA_IMM] = &Cpu::ldx_immediate;
+        instruction_map[OpCode::LDX_IMM] = &Cpu::ldx_immediate;
         instruction_map[OpCode::LDY_IMM] = &Cpu::ldy_immediate;
     }
 
