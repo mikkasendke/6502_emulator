@@ -1,3 +1,4 @@
+#include <set>
 #include <stdio.h>
 #include <stdint.h>
 #include <memory>
@@ -212,6 +213,14 @@ struct Cpu {
 
     void init_opcode_map() {
         instruction_map[OpCode::LDA_IMM] = &Cpu::lda_immediate;
+        instruction_map[OpCode::LDA_ABS] = &Cpu::lda_absolute;
+        instruction_map[OpCode::LDA_ABS_X] = &Cpu::lda_absolute_x;
+        instruction_map[OpCode::LDA_ABS_Y] = &Cpu::lda_absolute_y;
+        instruction_map[OpCode::LDA_ZP] = &Cpu::lda_zero_page;
+        instruction_map[OpCode::LDA_ZP_X] = &Cpu::lda_zero_page_x;
+        instruction_map[OpCode::LDA_IND_X] = &Cpu::lda_indirect_x;
+        instruction_map[OpCode::LDA_IND_Y] = &Cpu::lda_indirect_y;
+
         instruction_map[OpCode::LDX_IMM] = &Cpu::ldx_immediate;
         instruction_map[OpCode::LDY_IMM] = &Cpu::ldy_immediate;
     }
@@ -219,9 +228,7 @@ struct Cpu {
     void reset() {
         PC = 0xfffc;
         SP = 0xfd;
-        A = 0;
-        X = 0;
-        Y = 0;
+        A = X = Y = 0;
         flags = {0};
     }
 
@@ -260,6 +267,9 @@ struct Cpu {
         ++PC;
         return result;
     }
+    Byte peak_next_byte() {
+        return mem.read(PC);
+    }
     Word next_word_little_endian() {
         Word result = mem.read(PC);
         ++PC;
@@ -281,18 +291,81 @@ struct Cpu {
         printf("Illegal instruction at 0x%04X\n", PC - 1);
         //exit(1);
     }
-    void not_implemented() {
-        printf("Instruction not implemented at 0x%04X\n", PC - 1);
-        exit(1);
-    }
+
     void lda_immediate() {
-        A = next_byte();
+        ld_immediate(A);
     }
+    void lda_absolute() {
+        ld_absolute(A);
+    }
+    void lda_absolute_x() {
+        ld_absolute_indexed(A, X);
+    }
+    void lda_absolute_y() {
+        ld_absolute_indexed(A, Y);
+    }
+    void lda_zero_page() {
+        ld_zero_page(A);
+    }
+    void lda_zero_page_x() {
+        ld_zero_page_indexed(A, X);
+    }
+    void lda_zero_page_indirect_y() {
+
+    }
+
     void ldx_immediate() {
-        X = next_byte();
+        ld_immediate(X);
     }
+    void ldx_absolute() {
+        ld_absolute(X);
+    }
+
     void ldy_immediate() {
-        Y = next_byte();
+        ld_immediate(Y);
+    }
+    void ldy_absolute() {
+        ld_absolute(Y);
+    }
+    // Helper functions
+
+    void ld_immediate(Byte& reg) {
+        reg = next_byte();
+        set_zero_and_negative_flag(reg);
+    }
+    void ld_absolute(Byte& reg) {
+        Word address = next_word_little_endian();
+        reg = mem.read(address);
+        set_zero_and_negative_flag(reg);
+    }
+    void ld_absolute_indexed(Byte& reg, const Byte& index) {
+        Word address = next_word_little_endian();
+        address += index;
+        reg = mem.read(address);
+        set_zero_and_negative_flag(reg);
+    }
+    void ld_zero_page(Byte& reg) {
+        Byte address = next_byte();
+        reg = mem.read(address);
+        set_zero_and_negative_flag(reg);
+    }
+    void ld_zero_page_indexed(Byte& reg, const Byte& index) {
+        Byte address = next_byte();
+        address += index;
+        reg = mem.read(address);
+        set_zero_and_negative_flag(reg);
+    }
+    void ld_zero_page_indexed_indirect(Byte& reg, const Byte index) {
+        Byte address = next_byte();
+        address = address ^ index;
+        reg = mem.read(address);
+        set_zero_and_negative_flag(reg);
+    }
+
+
+    void set_zero_and_negative_flag(const Byte& reg) {
+        flags.Z = reg == 0;
+        flags.N = reg & (1 << 7);
     }
 };
 int main()
