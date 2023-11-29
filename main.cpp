@@ -1,7 +1,8 @@
 #include <set>
-#include <stdio.h>
-#include <stdint.h>
+#include <cstdio>
+#include <cstdint>
 #include <memory>
+#include <thread>
 #include <map>
 
 typedef uint8_t Byte;
@@ -10,21 +11,18 @@ typedef uint32_t DWord;
 
 struct Memory {
 
-    Memory(DWord total_size_in_bytes) {
+    explicit Memory(DWord total_size_in_bytes) {
         size = total_size_in_bytes;
         data = new Byte[size];
     }
-
     ~Memory() {
         delete[] data;
     }
-
     void initialize() {
         for (DWord i = 0; i < size; ++i) {
             data[i] = 0;
         }
     }
-
     Byte read(Word address) {
         if (address > size) return 0;
 
@@ -206,23 +204,9 @@ struct Cpu {
         INC_ABS_X = 0xFE
     };
 
-    Cpu(Memory program_memory) : mem(program_memory) {
+    explicit Cpu(const Memory& program_memory) : mem(program_memory) {
         reset();
         init_opcode_map();
-    }
-
-    void init_opcode_map() {
-        instruction_map[OpCode::LDA_IMM] = &Cpu::lda_immediate;
-        instruction_map[OpCode::LDA_ABS] = &Cpu::lda_absolute;
-        instruction_map[OpCode::LDA_ABS_X] = &Cpu::lda_absolute_x;
-        instruction_map[OpCode::LDA_ABS_Y] = &Cpu::lda_absolute_y;
-        instruction_map[OpCode::LDA_ZP] = &Cpu::lda_zero_page;
-        instruction_map[OpCode::LDA_ZP_X] = &Cpu::lda_zero_page_x;
-        instruction_map[OpCode::LDA_IND_X] = &Cpu::lda_indirect_x;
-        instruction_map[OpCode::LDA_IND_Y] = &Cpu::lda_indirect_y;
-
-        instruction_map[OpCode::LDX_IMM] = &Cpu::ldx_immediate;
-        instruction_map[OpCode::LDY_IMM] = &Cpu::ldy_immediate;
     }
 
     void reset() {
@@ -233,9 +217,7 @@ struct Cpu {
     }
 
     void tick() {
-        //system("@cls||clear");
-        //printf("tick\n");
-        OpCode instruction = static_cast<OpCode>(next_byte());
+        auto instruction = static_cast<OpCode>(next_byte());
 
         auto iter = instruction_map.find(instruction);
         if (iter == instruction_map.end()) {
@@ -243,6 +225,7 @@ struct Cpu {
             return;
         }
 
+        printf("Executing instruction: %d\n", static_cast<int>(instruction));
         (this->*iter->second)();
     }
 
@@ -260,7 +243,21 @@ struct Cpu {
     Byte Y; // Index Register Y
 
     StatusFlags flags; // Processor Status Flags
-             
+
+    void init_opcode_map() {
+        instruction_map[OpCode::LDA_IMM] = &Cpu::lda_immediate;
+        instruction_map[OpCode::LDA_ABS] = &Cpu::lda_absolute;
+        instruction_map[OpCode::LDA_ABS_X] = &Cpu::lda_absolute_x;
+        instruction_map[OpCode::LDA_ABS_Y] = &Cpu::lda_absolute_y;
+        instruction_map[OpCode::LDA_ZP] = &Cpu::lda_zero_page;
+        instruction_map[OpCode::LDA_ZP_X] = &Cpu::lda_zero_page_x;
+        instruction_map[OpCode::LDA_X_IND] = &Cpu::lda_x_indirect;
+        instruction_map[OpCode::LDA_IND_Y] = &Cpu::lda_indirect_y;
+
+        instruction_map[OpCode::LDX_IMM] = &Cpu::ldx_immediate;
+        instruction_map[OpCode::LDY_IMM] = &Cpu::ldy_immediate;
+    }
+
     // Fetching
     Byte next_byte() {
         Byte result = mem.read(PC);
@@ -285,9 +282,8 @@ struct Cpu {
         return result;
     }
 
-
     // Instructions
-    void illegal() {
+    void illegal() const {
         printf("Illegal instruction at 0x%04X\n", PC - 1);
         //exit(1);
     }
@@ -309,6 +305,12 @@ struct Cpu {
     }
     void lda_zero_page_x() {
         ld_zero_page_indexed(A, X);
+    }
+    void lda_x_indirect() {
+
+    }
+    void lda_indirect_y() {
+
     }
     void lda_zero_page_indirect_y() {
 
