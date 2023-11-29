@@ -1,0 +1,19 @@
+# Build output directories
+/build/
+/out/
+
+# Compiled files
+*.o
+*.out
+*.exe
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
+# Other editor-specific or system-specific files
+.DS_Store
+Thumbs.db
