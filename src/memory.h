@@ -8,7 +8,7 @@ class Memory {
         ~Memory();
 
         void initialize();
-        Byte read(Word address) const;
+        [[nodiscard]] Byte read(Word address) const;
         bool write(Word address, Byte value); // returns false if it fails
 
     private:
