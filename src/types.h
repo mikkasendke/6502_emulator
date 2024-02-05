@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-typedef int8_t Byte;
-typedef int16_t Word;
-typedef int32_t DWord;
-typedef int64_t QWord;
+typedef uint8_t Byte;
+typedef uint16_t Word;
+typedef uint32_t DWord;
+typedef uint64_t QWord;
