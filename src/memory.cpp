@@ -1,6 +1,8 @@
 #include "memory.h"
 
-Memory::Memory(Word size_in_bytes) :
+#include <optional>
+
+Memory::Memory(const Word size_in_bytes) :
     size(size_in_bytes),
     data(new Byte[size_in_bytes]) {
     initialize();
@@ -10,18 +12,20 @@ Memory::~Memory() {
     delete[] data;
 }
 
-void Memory::initialize() {
+void Memory::initialize() const {
     for (Word i = 0; i < size; ++i) {
         data[i] = 0;
     }
 }
 
-Byte Memory::read(Word address) const {
-    if (address >= size) return 0; // handle error better
+[[nodiscard]]
+std::optional<Byte> Memory::read(const Word address) const {
+    if (address >= size) return std::nullopt; // handle error better
     return data[address];
 }
 
-bool Memory::write(Word address, Byte value) {
+[[nodiscard]]
+bool Memory::write(const Word address, const Byte value) const {
     if (address >= size) return false;
     data[address] = value;
     return true;

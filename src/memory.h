@@ -1,5 +1,7 @@
 #pragma once
 
+#include <optional>
+
 #include "types.h"
 
 class Memory {
@@ -7,9 +9,9 @@ class Memory {
         explicit Memory(Word size_in_bytes);
         ~Memory();
 
-        void initialize();
-        [[nodiscard]] Byte read(Word address) const;
-        bool write(Word address, Byte value); // returns false if it fails
+        void initialize() const;
+        [[nodiscard]] std::optional<Byte> read(Word address) const;
+        [[nodiscard]] bool write(Word address, Byte value) const; // returns false if it fails
 
     private:
         Word size;

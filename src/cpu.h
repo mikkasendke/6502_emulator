@@ -8,6 +8,7 @@ class Cpu {
         explicit Cpu(const Memory& memory);
         void reset();
         void tick();
+
     private:
         Memory mem;
 
@@ -27,5 +28,4 @@ class Cpu {
             bool V : 1; // Overflow (probably no use)
             bool N : 1; // Negative 
         };
-
 };

@@ -17,3 +17,11 @@ Makefile
 # Other editor-specific or system-specific files
 .DS_Store
 Thumbs.db
+
+# Testing CLion Nova
+.idea/
+cmake-build-debug/
+
+
+
+
