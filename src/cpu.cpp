@@ -60,7 +60,7 @@ bool Cpu::LDA_IMM(const Byte& address) {
 
 bool Cpu::LDX_IMM(const Byte& address) {
     // TODO: Implement
-    return true;
+    return false;
 }
 
 bool Cpu::LDY_IMM(const Byte& address) {
