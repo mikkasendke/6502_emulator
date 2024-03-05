@@ -7,6 +7,8 @@
 *.out
 *.exe
 
+6502_emulator
+
 # CMake generated files
 CMakeFiles/
 CMakeCache.txt
